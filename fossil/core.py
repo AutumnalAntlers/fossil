@@ -252,15 +252,11 @@ def _create_embeddings(toots: list[Toot]):
     client = openai.OpenAI(api_key=config.OPENAI_KEY, base_url=config.OPENAI_API_BASE)
     toots = [t for t in toots if t.content]
 
-    # Call the OpenAI Text Embedding API to create embeddings
-    response = client.embeddings.create(input=[html2text.html2text(t.content) for t in toots], model=config.EMBEDDING_MODEL.name)
-
-
     # Extract the embeddings from the API response
-    print(f"got {len(response.data)} embeddings")
-    embeddings = [np.array(embedding.embedding) for embedding in response.data]
     for i, toot in enumerate(toots):
-        toot.embedding = embeddings[i]
+        # Call the OpenAI Text Embedding API to create embeddings
+        response = client.embeddings.create(input=html2text.html2text(toots[i].content), model=config.EMBEDDING_MODEL.name)
+        toot.embedding = np.array(response.data[0].embedding)
 
     # Return the embeddings
     return toots
