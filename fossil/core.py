@@ -249,7 +249,7 @@ def download_timeline(since: datetime.datetime):
 
 def _create_embeddings(toots: list[Toot]):
     # Convert the list of toots to a single string
-    client = openai.OpenAI(api_key=config.OPENAI_KEY)
+    client = openai.OpenAI(api_key=config.OPENAI_KEY, base_url=config.OPENAI_API_BASE)
     toots = [t for t in toots if t.content]
 
     # Call the OpenAI Text Embedding API to create embeddings
