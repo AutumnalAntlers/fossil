@@ -234,7 +234,7 @@ def download_timeline(since: datetime.datetime):
 
     # Set embeddings in batches of 100
     page_size = 50
-    num_pages = len(buffer) // page_size
+    num_pages = -(len(buffer) // -page_size)
     for page in range(num_pages):
         start_index = page * page_size
         end_index = start_index + page_size
