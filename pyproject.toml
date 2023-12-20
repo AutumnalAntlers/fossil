@@ -16,10 +16,6 @@ html2text = "^2020.1.16"
 tiktoken = "^0.5.2"
 python-dotenv = "^1.0.0"
 
-
-[tool.poetry.group.dev.dependencies]
-watchdog = "^3.0.0"
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
