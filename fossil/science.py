@@ -11,7 +11,7 @@ def assign_clusters(toots: list[core.Toot], n_clusters: int = 5):
     toots = [toot for toot in toots if toot.embedding is not None]
 
     # Perform k-means clustering on the embeddings
-    embeddings = np.array([toot.embedding for toot in toots])
+    embeddings = np.array([toot.embedding for toot in toots if type(toot.embedding) != type(None)])
     kmeans = KMeans(n_clusters=n_clusters)
     cluster_labels = kmeans.fit_predict(embeddings)
 
