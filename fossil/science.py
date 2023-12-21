@@ -3,7 +3,6 @@ import openai
 from . import core, config
 from sklearn.cluster import KMeans
 import openai
-import tiktoken
 
 
 def assign_clusters(toots: list[core.Toot], n_clusters: int = 5):
@@ -24,7 +23,7 @@ def assign_clusters(toots: list[core.Toot], n_clusters: int = 5):
         prompt = f"Create a single label that describes all of these related tweets, make it succinct but descriptive. The label should describe all {len(clustered_toots)} of these\n\n{combined_text}"
         response = client.chat.completions.create(
             model=config.SUMMARIZE_MODEL.name,
-            messages=[{"role": "user", "content": reduce_size(prompt)}],
+            messages=[{"role": "user", "content": core.reduce_size(prompt)}],
             max_tokens=100,
         )
         summary = response.choices[0].message.content.strip()
@@ -34,9 +33,3 @@ def assign_clusters(toots: list[core.Toot], n_clusters: int = 5):
             if cluster_label == i_clusters:
                 toot.cluster = summary
 
-
-ENCODING = tiktoken.encoding_for_model(config.SUMMARIZE_MODEL.name)
-
-def reduce_size(text: str, model_limit: int = config.SUMMARIZE_MODEL.context_length, est_output_size: int = 500) -> str:
-    tokens = ENCODING.encode(text)
-    return ENCODING.decode(tokens[:model_limit - est_output_size])

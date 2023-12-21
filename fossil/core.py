@@ -11,6 +11,8 @@ from fossil import config
 import os
 from pydantic import BaseModel
 import openai
+import tiktoken
+
 
 logger = logging.getLogger(__name__)
 
@@ -246,6 +248,12 @@ def download_timeline(since: datetime.datetime):
             for toot in page_toots:
                 toot.save(init_conn=conn)
 
+def reduce_size(text: str,
+                ENCODING = tiktoken.encoding_for_model(config.SUMMARIZE_MODEL.name),
+                model_limit: int = config.SUMMARIZE_MODEL.context_length,
+                est_output_size: int = 500) -> str:
+    tokens = ENCODING.encode(text)
+    return ENCODING.decode(tokens[:model_limit - est_output_size])
 
 def _create_embeddings(toots: list[Toot]):
     # Convert the list of toots to a single string
@@ -255,9 +263,11 @@ def _create_embeddings(toots: list[Toot]):
     # Extract the embeddings from the API response
     for i, toot in enumerate(toots):
         # Call the OpenAI Text Embedding API to create embeddings
-        response = client.embeddings.create(input=html2text.html2text(toots[i].content), model=config.EMBEDDING_MODEL.name)
+        reduced_input = reduce_size(html2text.html2text(toots[i].content),
+                                    ENCODING = tiktoken.encoding_for_model(config.EMBEDDING_MODEL.name),
+                                    model_limit=937)
+        response = client.embeddings.create(input=reduced_input, model=config.EMBEDDING_MODEL.name)
         toot.embedding = np.array(response.data[0].embedding)
 
     # Return the embeddings
     return toots
-
