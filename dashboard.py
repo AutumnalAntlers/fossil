@@ -56,16 +56,34 @@ clusters = sorted(list({t.cluster for t in toots if t.cluster}))
 if len(toots) == 0:
     st.markdown("No toots found. Try clicking **Download toots** or **Refresh toots** above and then click **Show**.")
 else:
-    port = io.StringIO()
-    science.toots_to_svg(port, toots, n_clusters)
-    value = port.getvalue()
-    components.html(value)
-    st.write("---")
-    st.image(value)
-    port.close()
+    st.vega_lite_chart(
+        science.format_for_vega(toots, n_clusters),
+        {
+            "mark": {
+                "type": "circle",
+                "size": 60,
+                "opacity": 0.8,
+            },
+            "params": [{
+                "name": "view",
+                "select": "interval",
+                "bind": "scales"
+            }],
+            "encoding": {
+                "x": {"field": "x", "type": "quantitative"},
+                "y": {"field": "y", "type": "quantitative"},
+                "color": {"field": "label", "type": "nominal"},
+                "href": {"field": "url", "type": "nominal"},
+                "tooltip": [
+                    {"field": "author", "type": "nominal"},
+                    {"field": "content", "type": "nominal"}
+                ]
+            }
+        })
     for cluster in clusters:
         cluster_count = len([t for t in toots if t.cluster == cluster])
         with st.expander(f"{cluster} ({cluster_count} toots)"):
             for toot in toots:
                 if toot.cluster == cluster:
                     ui.display_toot(toot)
+    # import code; code.interact(local=locals())

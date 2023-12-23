@@ -39,7 +39,7 @@ def display_toot(toot: core.Toot):
     with st.container(border=True):
         reply = "↩" if toot.is_reply else ""
         st.markdown(f"""
-{reply}<a href="{toot.profile_url}"><img src="{toot.avatar_url}" style="width: 40px; height: 40px" />{toot.display_name} @{toot.author} ({time_ago(toot.created_at)})</a>
+{reply}<a id="{toot.id}" href="{toot.profile_url}"><img src="{toot.avatar_url}" style="width: 40px; height: 40px" />{toot.display_name} @{toot.author} ({time_ago(toot.created_at)})</a>
 {toot.content}
 """, unsafe_allow_html=True)
         cols = st.columns(10)
