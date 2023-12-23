@@ -259,6 +259,7 @@ def reduce_size(text: str,
     return ENCODING.decode(tokens[:model_limit - est_output_size])
 
 def _create_embeddings(toots: list[Toot]):
+    print('create embeddings')
     # Convert the list of toots to a single string
     client = openai.OpenAI(api_key=config.OPENAI_KEY, base_url=config.OPENAI_API_BASE)
     toots = [t for t in toots if t.content]
@@ -273,4 +274,6 @@ def _create_embeddings(toots: list[Toot]):
         toot.embedding = np.array(response.data[0].embedding)
 
     # Return the embeddings
+    print('return embeddings')
+    # Convert the list of toots to a single string
     return toots

@@ -1,8 +1,10 @@
 import datetime
 from fossil import config, core, science, ui
 import streamlit as st
+import streamlit.components.v1 as components
 import datetime
 import random
+import io
 
 @st.cache_data
 def default_date():
@@ -38,7 +40,7 @@ else:
 timeline_since = ui.get_time_frame()
 
 # customize clustering algo
-n_clusters = st.slider("Number of clusters", 2, 20, 15)
+n_clusters = st.slider("Number of clusters", 2, 20, 5)
 
 if "cache_key" not in st.session_state:
     print("init cache_key", st.session_state)
@@ -54,6 +56,13 @@ clusters = sorted(list({t.cluster for t in toots if t.cluster}))
 if len(toots) == 0:
     st.markdown("No toots found. Try clicking **Download toots** or **Refresh toots** above and then click **Show**.")
 else:
+    port = io.StringIO()
+    science.toots_to_svg(port, toots, n_clusters)
+    value = port.getvalue()
+    components.html(value)
+    st.write("---")
+    st.image(value)
+    port.close()
     for cluster in clusters:
         cluster_count = len([t for t in toots if t.cluster == cluster])
         with st.expander(f"{cluster} ({cluster_count} toots)"):

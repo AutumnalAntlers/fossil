@@ -3,9 +3,11 @@ from datetime import timedelta, datetime
 from . import core, config
 
 def get_time_frame() -> timedelta:
-    time_frame = st.radio("Show last:", ["6 hours", "day", "week"], horizontal=True)
+    time_frame = st.radio("Show last:", ["2 hours", "6 hours", "day", "week"], horizontal=True)
     
-    if time_frame == "6 hours":
+    if time_frame == "2 hours":
+        return timedelta(hours=2)
+    elif time_frame == "6 hours":
         return timedelta(hours=6)
     elif time_frame == "day":
         return timedelta(days=1)
