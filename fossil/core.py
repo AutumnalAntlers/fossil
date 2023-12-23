@@ -172,7 +172,10 @@ class Toot(BaseModel):
             latest_date = result[0] if result[0] else None
 
             if isinstance(latest_date, str):
-                latest_date = datetime.datetime.strptime(latest_date, "%Y-%m-%d %H:%M:%S")
+                try:
+                  latest_date = datetime.datetime.strptime(latest_date, "%Y-%m-%d %H:%M:%S")
+                except Exception:
+                  latest_date = datetime.datetime.strptime(latest_date, "%Y-%m-%d %H:%M:%S.%f")
             return latest_date
 
     @classmethod
